@@ -6,6 +6,8 @@ public class NBody {
 		String filename = args[2];
 		double radius = readRadius(filename);
 		Planet[] planets = readPlanets(filename);
+		double[] xForces = new double[planets.length];
+		double[] yForces = new double[planets.length];
 		StdDraw.setScale(-radius, radius);
 		StdDraw.clear();
 		StdDraw.picture(0,0,"images/starfield.jpg");
@@ -14,15 +16,10 @@ public class NBody {
 		}
 		double t = 0;
 		while(t<T){
-			double[] xForces = new double[planets.length];
-			double[] yForces = new double[planets.length];
-			for(int i = 0;i<planets.length;i++){
-				for(int j = 0;j<planets.length;j++){
-					if(i!=j){
-						xForces[i] += planets[i].calcForceExertedByX(planets[j]);
-						yForces[i] += planets[i].calcForceExertedByY(planets[j]);
-					}
-				}
+			
+			for (int i = 0; i<planets.length;i++){
+				xForces[i] = planets[i].calcNetForceExertedByX(planets);
+				yForces[i] = planets[i].calcNetForceExertedByY(planets);
 			}
 			for(int i = 0;i<planets.length;i++){
 				planets[i].update(dt,xForces[i],yForces[i]);					
