@@ -66,15 +66,19 @@ public class LinkedListDeque <Item> {
         sentinel.prev.prev.next = sentinel.prev;
         size += 1;
     }
-    public void removeFirst() {
+    public Item removeFirst() {
+        Item value = sentinel.next.item;
         sentinel.next = sentinel.next.next;
         sentinel.next.prev = sentinel;
         size -= 1;
+        return value;
     }
-    public void removeLast() {
+    public Item removeLast() {
+        Item value = sentinel.prev.item;
         sentinel.prev = sentinel.prev.prev;
         sentinel.prev.next = sentinel;
         size -= 1;
+        return value;
     }
     public int size() {
         return size;
