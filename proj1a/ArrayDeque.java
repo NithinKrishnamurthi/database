@@ -1,0 +1,133 @@
+/**
+ * Created by nithin on 2/2/17.
+ */
+public class ArrayDeque<Item> {
+    private Item[] items;
+    private int size;
+    private double usageFactor = 0.25;
+    private int nextFirst;
+    private int nextLast;
+    public ArrayDeque() {
+        items = (Item[]) new Object[8];
+        nextFirst = 0;
+        nextLast = 1;
+        size = 0;
+    }
+
+    public void addFirst(Item item) {
+        if (size == items.length) {
+            resize(items.length * 2);
+        }
+        items[nextFirst] = item;
+        size = size + 1;
+        updateNextFirstAdd();
+    }
+
+    public void addLast(Item item) {
+        if (size == items.length) {
+            resize(items.length * 2);
+        }
+        items[nextLast] = item;
+        size = size + 1;
+        updateNextLastAdd();
+    }
+
+    public boolean isEmpty() {
+        if (nextLast == nextFirst + 1) {
+            return true;
+        }
+        return false;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public void printDeque() {
+        int i = nextFirst;
+        for (int j = 0; j < size; j++) {
+            i += 1;
+            i = i % items.length;
+            System.out.print(items[i]);
+        }
+    }
+    public Item removeFirst() {
+        if (isEmpty()) {
+            return null;
+        }
+        if (size * 1.0 / items.length < usageFactor && items.length >= 16) {
+            resize(items.length / 2);
+        }
+        size = size - 1;
+        updateNextFirstRemove();
+        Item value = items[nextFirst];
+        items[nextFirst] = null;
+        return value;
+    }
+    public Item removeLast() {
+        if (isEmpty()) {
+            return null;
+        }
+        if (size * 1.0 / items.length < usageFactor && items.length >= 16) {
+            resize(items.length / 2);
+        }
+        size = size - 1;
+        updateNextLastRemove();
+        Item value = items[nextLast];
+        items[nextLast] = null;
+        return value;
+    }
+    public Item get(int index) {
+        if (index > items.length || index < 0) {
+            System.out.println("Not a valid index");
+        }
+        index = (index + nextFirst + 1) % items.length;
+        return items[index];
+    }
+
+    //Helper functions
+
+    public Item[] toArray() {
+        Item[] newItems = (Item[]) new Object[items.length];
+        int i = nextFirst;
+
+        for (int j = 0; j < items.length; j++) {
+            i = i + 1;
+            i = i % items.length;
+            newItems[j] = items[i];
+        }
+        return newItems;
+    }
+
+    public void resize(int capacity) {
+        Item[] newItems = (Item[]) new Object[capacity];
+        System.arraycopy(toArray(), 0, newItems, 0, size);
+        items = newItems;
+        nextFirst = items.length - 1;
+        nextLast = size;
+    }
+    public void updateNextFirstAdd() {
+        nextFirst = nextFirst - 1;
+        if (nextFirst == -1) {
+            nextFirst = items.length - 1;
+        }
+
+    }
+
+    public void updateNextFirstRemove(){
+        nextFirst = nextFirst + 1;
+        nextFirst = nextFirst % items.length;
+    }
+
+    public void updateNextLastAdd() {
+        nextLast = nextLast + 1;
+        nextLast = nextLast % items.length;
+    }
+    public void updateNextLastRemove(){
+        nextLast = nextLast - 1;
+        if (nextLast == -1) {
+            nextLast = items.length - 1;
+        }
+
+    }
+}
