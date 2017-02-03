@@ -39,7 +39,19 @@ public class ArrayDequeTest {
 //        System.out.println(test.size());
         test.removeFirst();
 
-
-        test.printDeque();
+        ArrayDeque<Integer> arr = new ArrayDeque<Integer>();
+        for (int i = 0; i < 10000; i++) {
+            double test1 = Math.random() * 100;
+            if (test1 > 75) {
+                arr.addFirst(i);
+            } else if (test1 > 50) {
+                arr.addLast(i);
+            } else if (test1 > 25) {
+                arr.removeFirst();
+            } else {
+                arr.removeLast();
+            }
+        }
+        arr.printDeque();
     }
 }

@@ -33,10 +33,7 @@ public class ArrayDeque<Item> {
     }
 
     public boolean isEmpty() {
-        if (nextLast == nextFirst + 1) {
-            return true;
-        }
-        return false;
+        return size == 0;
     }
 
     public int size() {
@@ -49,6 +46,7 @@ public class ArrayDeque<Item> {
             i += 1;
             i = i % items.length;
             System.out.print(items[i]);
+            System.out.print(' ');
         }
     }
     public Item removeFirst() {
@@ -68,7 +66,7 @@ public class ArrayDeque<Item> {
         if (isEmpty()) {
             return null;
         }
-        if (size * 1.0 / items.length < usageFactor && items.length >= 16) {
+        if (size * 1.0 / items.length < usageFactor && items.length > 8) {
             resize(items.length / 2);
         }
         size = size - 1;
@@ -87,7 +85,7 @@ public class ArrayDeque<Item> {
 
     //Helper functions
 
-    public Item[] toArray() {
+    private Item[] toArray() {
         Item[] newItems = (Item[]) new Object[items.length];
         int i = nextFirst;
 
@@ -99,31 +97,30 @@ public class ArrayDeque<Item> {
         return newItems;
     }
 
-    public void resize(int capacity) {
+    private void resize(int capacity) {
         Item[] newItems = (Item[]) new Object[capacity];
         System.arraycopy(toArray(), 0, newItems, 0, size);
         items = newItems;
         nextFirst = items.length - 1;
         nextLast = size;
     }
-    public void updateNextFirstAdd() {
+    private void updateNextFirstAdd() {
         nextFirst = nextFirst - 1;
         if (nextFirst == -1) {
             nextFirst = items.length - 1;
         }
-
     }
 
-    public void updateNextFirstRemove(){
+    private void updateNextFirstRemove() {
         nextFirst = nextFirst + 1;
         nextFirst = nextFirst % items.length;
     }
 
-    public void updateNextLastAdd() {
+    private void updateNextLastAdd() {
         nextLast = nextLast + 1;
         nextLast = nextLast % items.length;
     }
-    public void updateNextLastRemove(){
+    private void updateNextLastRemove() {
         nextLast = nextLast - 1;
         if (nextLast == -1) {
             nextLast = items.length - 1;

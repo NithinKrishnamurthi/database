@@ -1,7 +1,7 @@
 /**
  * Created by nithin on 1/31/17.
  */
-public class LinkedListDeque <Item> {
+public class LinkedListDeque<Item> {
     private class ItemNode {
         private Item item;
         private ItemNode prev;
@@ -30,28 +30,29 @@ public class LinkedListDeque <Item> {
         sentinel = new ItemNode();
         size = 0;
     }
-    public Item get(int i){
+    public Item get(int i) {
         p = p.next;
-        while(i > 0){
+        while (i > 0) {
             i = i - 1;
             p = p.next;
         }
-        if(i == 0){
+        if (i == 0) {
+            Item val = p.item;
             p = sentinel;
-            return p.item;
+            return val;
         }
         p = sentinel;
         return null;
     }
 
-    public Item getRecursive(int i){
+    public Item getRecursive(int i) {
         p = p.next;
-        if(i == 0) {
+        if (i == 0) {
+            Item val = p.item;
             p = sentinel;
-            return p.item;
-        }
-        else{
-            return getRecursive(i-1);
+            return val;
+        } else {
+            return getRecursive(i - 1);
         }
 
     }
