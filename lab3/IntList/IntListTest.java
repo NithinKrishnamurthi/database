@@ -28,12 +28,13 @@ public class IntListTest {
     }
 
     @Test
-    public void testReverse(){
-        IntList L = IntList.list(1,2,3);
-        assertEquals(IntList.list(3,2,1),IntList.reverse(L));
-        assertNotEquals(IntList.list(1,2,3),L);
-        assertEquals(null,IntList.reverse(null));
+    public void testReverse() {
+        IntList L = IntList.list(1, 2, 3);
+        assertEquals(IntList.list(3, 2, 1), IntList.reverse(L));
+        assertNotEquals(IntList.list(1, 2, 3), L);
+        assertEquals(null, IntList.reverse(null));
     }
+
     /**
      * Do not use the new keyword in your tests. You can create
      * lists using the handy IntList.list method.
@@ -66,7 +67,7 @@ public class IntListTest {
 
     @Test
     public void testCatenate() {
-        IntList A = IntList.list(1,2,3);
+        IntList A = IntList.list(1, 2, 3);
         IntList B = IntList.list(4, 5, 6);
         IntList exp = IntList.list(1, 2, 3, 4, 5, 6);
         assertEquals(exp, IntList.catenate(A, B));
@@ -74,7 +75,7 @@ public class IntListTest {
     }
 
     /** If you're running this from the command line, you'll need
-      * to add a main method. See ArithmeticTest.java for an
-      * example. */
+     * to add a main method. See ArithmeticTest.java for an
+     * example. */
 
 }

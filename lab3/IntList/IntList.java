@@ -42,7 +42,8 @@ public class IntList {
             L = L.rest;
         }
     }
-    public static IntList reverse(IntList a){
+
+    public static IntList reverse(IntList a) {
         return null;
     }
 
@@ -82,10 +83,9 @@ public class IntList {
      * *  elements of B.  May modify items of A. Don't use 'new'.
      */
 
-    public static IntList dcatenate(IntList A, IntList B)
-    {
+    public static IntList dcatenate(IntList A, IntList B) {
         IntList aCopy = A;
-        while(A.rest != null){
+        while (A.rest != null) {
             A = A.rest;
         }
         A.rest = B;
@@ -98,10 +98,10 @@ public class IntList {
      * * elements of B.  May NOT modify items of A.  Use 'new'.
      */
     public static IntList catenate(IntList A, IntList B) {
-        if(A.rest == null){
-            return new IntList(A.first,B);
+        if (A.rest == null) {
+            return new IntList(A.first, B);
         }
-        return new IntList(A.first,catenate(A.rest,B));
+        return new IntList(A.first, catenate(A.rest, B));
 
     }
 
