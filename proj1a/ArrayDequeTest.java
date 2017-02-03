@@ -3,7 +3,21 @@
  */
 public class ArrayDequeTest {
     public static void main(String[] args) {
+
+
         System.out.println("Running tests.\n");
+
+        LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
+
+
+        lld1.addFirst("front");
+
+        lld1.addLast("middle");
+
+        lld1.addLast("back");
+
+        System.out.println(lld1.get(2));
+
         ArrayDeque<String> test = new ArrayDeque<String>();
 //        System.out.println(test.removeFirst());
 //        System.out.println(test.size());

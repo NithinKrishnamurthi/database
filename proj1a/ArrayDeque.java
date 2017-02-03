@@ -78,6 +78,7 @@ public class ArrayDeque<Item> {
     public Item get(int index) {
         if (index > items.length || index < 0) {
             System.out.println("Not a valid index");
+
         }
         index = (index + nextFirst + 1) % items.length;
         return items[index];

@@ -18,7 +18,6 @@ public class LinkedListDeque<Item> {
         }
     }
     private ItemNode sentinel;
-    private ItemNode p;
     private int size;
     public boolean isEmpty() {
         if (sentinel.next == sentinel) {
@@ -31,30 +30,28 @@ public class LinkedListDeque<Item> {
         size = 0;
     }
     public Item get(int i) {
-        p = p.next;
+        ItemNode p = sentinel.next;
         while (i > 0) {
             i = i - 1;
             p = p.next;
         }
         if (i == 0) {
-            Item val = p.item;
-            p = sentinel;
-            return val;
+            return p.item;
         }
-        p = sentinel;
         return null;
     }
 
     public Item getRecursive(int i) {
-        p = p.next;
-        if (i == 0) {
-            Item val = p.item;
-            p = sentinel;
-            return val;
-        } else {
-            return getRecursive(i - 1);
-        }
+        return helperRecursive(i, sentinel.next);
+    }
 
+
+    private Item  helperRecursive(int i, ItemNode p) {
+        if (i == 0 || p == sentinel) {
+            return p.item;
+        } else {
+            return helperRecursive(i - 1, p.next);
+        }
     }
     public void addFirst(Item item) {
         sentinel.next = new ItemNode(item, sentinel, sentinel.next);
