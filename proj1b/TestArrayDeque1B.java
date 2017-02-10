@@ -19,26 +19,22 @@ public class TestArrayDeque1B {
                 sad.addLast(i);
                 ads.addLast(i);
                 fs.addOperation(new DequeOperation("addLast", i));
-                Assert.assertEquals(fs.toString(), sad, ads);
             } else {
                 sad.addFirst(i);
                 ads.addFirst(i);
                 fs.addOperation(new DequeOperation("addFirst", i));
-                Assert.assertEquals(fs.toString(), sad, ads);
             }
         }
         for (int i = 0; i < 5000; i += 1) {
             numberBetweenZeroAndOne = StdRandom.uniform();
             if (numberBetweenZeroAndOne < 0.5) {
-                sad.removeFirst();
-                ads.removeFirst();
                 fs.addOperation(new DequeOperation("removeFirst"));
-                Assert.assertEquals(fs.toString(), sad, ads);
+                Assert.assertEquals(fs.toString(), sad.removeFirst(), ads.removeFirst());
             } else {
                 sad.removeLast();
                 ads.removeLast();
                 fs.addOperation(new DequeOperation("removeLast"));
-                Assert.assertEquals(fs.toString(), sad, ads);
+                Assert.assertEquals(fs.toString(), sad.removeFirst(), ads.removeFirst());
             }
         }
     }
