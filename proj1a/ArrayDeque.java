@@ -1,7 +1,7 @@
 /**
  * Created by nithin on 2/2/17.
  */
-public class ArrayDeque<Item> {
+public class ArrayDeque<Item> implements Deque<Item>{
     private Item[] items;
     private int size;
     private double usageFactor = 0.25;
@@ -13,7 +13,7 @@ public class ArrayDeque<Item> {
         nextLast = 1;
         size = 0;
     }
-
+    @Override
     public void addFirst(Item item) {
         if (size == items.length) {
             resize(items.length * 2);
@@ -22,7 +22,7 @@ public class ArrayDeque<Item> {
         size = size + 1;
         updateNextFirstAdd();
     }
-
+    @Override
     public void addLast(Item item) {
         if (size == items.length) {
             resize(items.length * 2);
@@ -31,15 +31,17 @@ public class ArrayDeque<Item> {
         size = size + 1;
         updateNextLastAdd();
     }
-
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    @Override
     public int size() {
         return size;
     }
 
+    @Override
     public void printDeque() {
         int i = nextFirst;
         for (int j = 0; j < size; j++) {
@@ -49,6 +51,7 @@ public class ArrayDeque<Item> {
             System.out.print(' ');
         }
     }
+    @Override
     public Item removeFirst() {
         if (isEmpty()) {
             return null;
@@ -62,6 +65,7 @@ public class ArrayDeque<Item> {
         items[nextFirst] = null;
         return value;
     }
+    @Override
     public Item removeLast() {
         if (isEmpty()) {
             return null;
@@ -75,6 +79,7 @@ public class ArrayDeque<Item> {
         items[nextLast] = null;
         return value;
     }
+    @Override
     public Item get(int index) {
         if (index > items.length || index < 0) {
             System.out.println("Not a valid index");

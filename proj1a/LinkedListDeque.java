@@ -1,7 +1,7 @@
 /**
  * Created by nithin on 1/31/17.
  */
-public class LinkedListDeque<Item> {
+public class LinkedListDeque<Item> implements Deque<Item>{
     private class ItemNode {
         private Item item;
         private ItemNode prev;
@@ -19,6 +19,7 @@ public class LinkedListDeque<Item> {
     }
     private ItemNode sentinel;
     private int size;
+    @Override
     public boolean isEmpty() {
         if (sentinel.next == sentinel) {
             return true;
@@ -29,6 +30,7 @@ public class LinkedListDeque<Item> {
         sentinel = new ItemNode();
         size = 0;
     }
+    @Override
     public Item get(int i) {
         ItemNode p = sentinel.next;
         while (i > 0) {
@@ -53,17 +55,20 @@ public class LinkedListDeque<Item> {
             return helperRecursive(i - 1, p.next);
         }
     }
+    @Override
     public void addFirst(Item item) {
         sentinel.next = new ItemNode(item, sentinel, sentinel.next);
         sentinel.next.next.prev = sentinel.next;
         size += 1;
 
     }
+    @Override
     public void addLast(Item item) {
         sentinel.prev = new ItemNode(item, sentinel.prev, sentinel);
         sentinel.prev.prev.next = sentinel.prev;
         size += 1;
     }
+    @Override
     public Item removeFirst() {
         Item value = sentinel.next.item;
         sentinel.next = sentinel.next.next;
@@ -71,6 +76,7 @@ public class LinkedListDeque<Item> {
         size -= 1;
         return value;
     }
+    @Override
     public Item removeLast() {
         Item value = sentinel.prev.item;
         sentinel.prev = sentinel.prev.prev;
@@ -78,9 +84,12 @@ public class LinkedListDeque<Item> {
         size -= 1;
         return value;
     }
+    @Override
     public int size() {
         return size;
     }
+
+    @Override
     public void printDeque() {
         ItemNode i = sentinel.next;
         while (i != sentinel) {
