@@ -4,23 +4,23 @@ ArrayDeque:
 
 Q: Give an example of at least one idea from the staff solution that would have made your solution better (if any).
 
-A: 
+A: I basically did most of what they did.
 
 Q: What's something you felt proud of in your code, if anything?
 
-A:
+A: I sort of abstracted out the method add and remove like them.
 
 Q: What's something that was particularly inelegant in your code, if anything?
 
-A:
+A: THe way I implemented the add and remove was pretty inelegant; I could have cut out two functions.
 
 Q: What do you wish you would have known before writing ArrayDeque, if anything?
 
-A:
+A: Resize doesn't need to happen at exactly 16, it can happen earlier if you want it to.
 
 Q: If you wrote ArrayDeque again, what would you do differently, if anything?
 
-A:
+A: I probably would just use one pointer that pointed to the start of the list; the lastItem pointer is useless: it can be found with start + size mod length.
 
 -----
 
@@ -28,23 +28,23 @@ LinkedListDeque:
 
 Q: Give an example of at least one idea from the staff solution that would have made your solution better (if any).
 
-A: 
+A: N/A
 
 Q: What's something you felt proud of in your code, if anything?
 
-A:
+A: I broke everything up well and got the solution that they were basically looking for.
 
 Q: What's something that was particularly inelegant in your code, if anything?
 
-A:
+A: N/A
 
 Q: What do you wish you would have known before writing ArrayDeque, if anything?
 
-A:
+A: Resize doesn't need to happen at exactly 16, it can happen earlier if you want it to.
 
 Q: If you wrote LinkedListDeque again, what would you do differently, if anything?
 
-A:
+A: N/A
 
 -----
 
@@ -52,4 +52,4 @@ Meta:
 
 Q: This is the first time we've tried something like this. Did you like this design review process? Anything we should do differently next time?
 
-A: 
+A: I think this was mostly pretty useless, being honest. I think posting a solution online would be a lot more effective.
