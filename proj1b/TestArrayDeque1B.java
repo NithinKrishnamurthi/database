@@ -11,20 +11,25 @@ public class TestArrayDeque1B {
         /* Copied partially from StudentArrayDequeLauncher */
         ArrayDequeSolution<Integer> ads = new ArrayDequeSolution<>();
         StudentArrayDeque<Integer> sad = new StudentArrayDeque<>();
+        double numberBetweenZeroAndOne;
         OperationSequence fs = new OperationSequence();
-        for (int i = 0; i < 10000; i += 1) {
-            double numberBetweenZeroAndOne = StdRandom.uniform();
-            if (numberBetweenZeroAndOne < 0.25) {
+        for (int i = 0; i < 5000; i += 1) {
+            numberBetweenZeroAndOne = StdRandom.uniform();
+            if (numberBetweenZeroAndOne < 0.5) {
                 sad.addLast(i);
                 ads.addLast(i);
                 fs.addOperation(new DequeOperation("addLast", i));
                 Assert.assertEquals(fs.toString(), sad, ads);
-            } else if (numberBetweenZeroAndOne > 0.25 && numberBetweenZeroAndOne < 0.5) {
+            } else {
                 sad.addFirst(i);
                 ads.addFirst(i);
                 fs.addOperation(new DequeOperation("addFirst", i));
                 Assert.assertEquals(fs.toString(), sad, ads);
-            } else if (numberBetweenZeroAndOne > 0.5 && numberBetweenZeroAndOne < 0.75) {
+            }
+        }
+        for (int i = 0; i < 5000; i += 1) {
+            numberBetweenZeroAndOne = StdRandom.uniform();
+            if (numberBetweenZeroAndOne < 0.5) {
                 sad.removeFirst();
                 ads.removeFirst();
                 fs.addOperation(new DequeOperation("removeFirst"));
@@ -35,7 +40,6 @@ public class TestArrayDeque1B {
                 fs.addOperation(new DequeOperation("removeLast"));
                 Assert.assertEquals(fs.toString(), sad, ads);
             }
-
         }
     }
 
