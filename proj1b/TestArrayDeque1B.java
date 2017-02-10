@@ -13,7 +13,7 @@ public class TestArrayDeque1B {
         StudentArrayDeque<Integer> sad = new StudentArrayDeque<>();
         double numberBetweenZeroAndOne;
         OperationSequence fs = new OperationSequence();
-        for (int i = 0; i < 5000; i += 1) {
+        for (int i = 0; i < 50; i += 1) {
             numberBetweenZeroAndOne = StdRandom.uniform();
             if (numberBetweenZeroAndOne < 0.5) {
                 sad.addLast(i);
@@ -25,16 +25,15 @@ public class TestArrayDeque1B {
                 fs.addOperation(new DequeOperation("addFirst", i));
             }
         }
-        for (int i = 0; i < 5000; i += 1) {
+        for (int i = 0; i < 50; i += 1) {
             numberBetweenZeroAndOne = StdRandom.uniform();
             if (numberBetweenZeroAndOne < 0.5) {
+
                 fs.addOperation(new DequeOperation("removeFirst"));
-                Assert.assertEquals(fs.toString(), sad.removeFirst(), ads.removeFirst());
+                Assert.assertEquals(fs.toString(), ads.removeFirst(), sad.removeFirst());
             } else {
-                sad.removeLast();
-                ads.removeLast();
                 fs.addOperation(new DequeOperation("removeLast"));
-                Assert.assertEquals(fs.toString(), sad.removeFirst(), ads.removeFirst());
+                Assert.assertEquals(fs.toString(), ads.removeLast(), sad.removeLast());
             }
         }
     }
