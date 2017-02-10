@@ -2,10 +2,6 @@
  * Created by nithin on 2/9/17.
  */
 public class Palindrome {
-    public static void main(String[] args) {
-        System.out.print(isPalindrome("hello"));
-        System.out.print(isPalindrome("flake", new OffByOne()));
-    }
 
     public static Deque<Character> wordToDeque(String word) {
         char[] array = word.toCharArray();

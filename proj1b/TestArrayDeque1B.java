@@ -6,12 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestArrayDeque1B {
-    public static void main(String[] args) {
-        testArrayDequeMethods();
-    }
-
     @Test
-    public static void testArrayDequeMethods() {
+    public void testArrayDequeMethods() {
         /* Copied partially from StudentArrayDequeLauncher */
         ArrayDequeSolution<Integer> ads = new ArrayDequeSolution<>();
         StudentArrayDeque<Integer> sad = new StudentArrayDeque<>();
