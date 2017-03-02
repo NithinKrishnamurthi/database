@@ -156,7 +156,7 @@ public class Database{
         Table table = new Table(columnsArray);
 
         //Get the information
-        Pattern readValues = Pattern.compile("(\\w+)");
+        Pattern readValues = Pattern.compile("(\\w+.*\\w+\\b)");
         while (input.hasNextLine()) {
             //get the next line
             line = input.nextLine();
