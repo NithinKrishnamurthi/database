@@ -1,7 +1,11 @@
 package db;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,7 +66,12 @@ public class Database{
         if ((m = CREATE_CMD.matcher(query)).matches()) {
             createTable(m.group(1));
         } else if ((m = LOAD_CMD.matcher(query)).matches()) {
-            loadTable(m.group(1));
+            try {
+                return loadTable(m.group(1));
+            }
+            catch(Exception e){
+                return "ERROR: TBL file not found: " + m.group(1);
+            }
         } else if ((m = STORE_CMD.matcher(query)).matches()) {
             storeTable(m.group(1));
         } else if ((m = DROP_CMD.matcher(query)).matches()) {
@@ -114,8 +123,63 @@ public class Database{
         return "";
     }
 
-    private void loadTable(String name) {
+    private String loadTable(String name) throws FileNotFoundException {
+        //POSSIBLE ERRORS:
+        //Scanner was implemented incorrectly
+        //ARRAYLIST IN FOR LOOP COULD POSSIBLY ADD MORE VALUES EACH CREATION??
+
         System.out.printf("You are trying to load the table named %s\n", name);
+        //Initialize new Scanner and Regex Objects
+        File file = new File(name);
+        Scanner input = new Scanner(file);
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> types = new ArrayList<>();
+        Matcher matcher;
+
+        //Get the Column Titles
+        String line = input.nextLine();
+        String[] columnExpressions = line.split(",");
+        Pattern readColumns = Pattern.compile("(\\w+) *(\\w+)");
+        for (String i : columnExpressions) {
+            matcher = readColumns.matcher(i);
+            matcher.find();
+            names.add(matcher.group(1));
+            types.add(matcher.group(2));
+        }
+        ArrayList<Column> toColumns = new ArrayList<>();
+        for (int i = 0; i < names.size(); i++) {
+            toColumns.add(
+                    new Column(names.get(i), Data.valueOf(types.get(i).toUpperCase()))
+            );
+        }
+        Column[] columnsArray = new Column[toColumns.size()];
+        columnsArray = toColumns.toArray(columnsArray);
+
+        Table table = new Table(columnsArray);
+
+        //Get the information
+        Pattern readValues = Pattern.compile("(\\w+)");
+        while (input.hasNextLine()) {
+            //get the next line
+            line = input.nextLine();
+            //split the next line
+            String[] values = line.split(",");
+            //new arraylist for storage
+            ArrayList<String> the_values = new ArrayList<>();
+            for (String i : values) {
+                //set the matcher and prime it with find
+                matcher = readValues.matcher(i);
+                matcher.find();
+                //add to the values
+                the_values.add(matcher.group(0));
+            }
+            String[] toRow = new String[the_values.size()];
+            toRow = the_values.toArray(toRow);
+            table.addRow(toRow);
+        }
+        input.close();
+        this.addTable(name,table);
+        return "";
     }
 
     private void storeTable(String name) {
