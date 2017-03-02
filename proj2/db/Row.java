@@ -106,7 +106,7 @@ public class Row {
         boolean firstElem = true;
         for(Item item:items){
             if(!firstElem){
-                returnVal += ", ";
+                returnVal += ",";
             }
             if(item.column.type == Data.STRING) {
                 returnVal += "'" + item.value + "'";
