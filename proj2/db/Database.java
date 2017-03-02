@@ -133,7 +133,8 @@ public class Database{
         Scanner input = new Scanner(file);
         //Get the Column Titles
         String line = input.nextLine();
-        String[] columnExpressions = line.split(",");
+        line = line.trim();
+        String[] columnExpressions = line.split("\\s*,\\s*");
         Column[] columnArray = new Column[columnExpressions.length];
         for (int i = 0;i<columnExpressions.length;i++) {
             String[] colData = columnExpressions[i].split(" ");
@@ -145,7 +146,7 @@ public class Database{
             //get the next line
             line = input.nextLine();
             //split the next line
-            String[] values = line.split(",");
+            String[] values = line.split("\\s*,\\s*");
             table.addRow(values);
         }
         input.close();
