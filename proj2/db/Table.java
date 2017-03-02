@@ -124,7 +124,7 @@ public class Table {
         boolean firstElem = true;
         for(Column c : columns){
             if(!firstElem){
-                returnVal += ", ";
+                returnVal += ",";
             }
             returnVal += c.name + " " + c.type.toString().toLowerCase();
             firstElem = false;
