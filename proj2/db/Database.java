@@ -69,8 +69,8 @@ public class Database{
             try {
                 return loadTable(m.group(1));
             }
-            catch(Exception e){
-                return "ERROR: TBL file not found: " + m.group(1) +".tbl";
+            catch(FileNotFoundException e){
+                return "ERROR: TBL file not found: " + m.group(1) + ".tbl";
             }
         } else if ((m = STORE_CMD.matcher(query)).matches()) {
             storeTable(m.group(1));
@@ -128,52 +128,25 @@ public class Database{
         //Scanner was implemented incorrectly
         //ARRAYLIST IN FOR LOOP COULD POSSIBLY ADD MORE VALUES EACH CREATION??
         //Initialize new Scanner and Regex Objects
+
         File file = new File(name + ".tbl");
         Scanner input = new Scanner(file);
-        ArrayList<String> names = new ArrayList<>();
-        ArrayList<String> types = new ArrayList<>();
-        Matcher matcher;
-
         //Get the Column Titles
         String line = input.nextLine();
         String[] columnExpressions = line.split(",");
-        Pattern readColumns = Pattern.compile("(\\w+) *(\\w+)");
-        for (String i : columnExpressions) {
-            matcher = readColumns.matcher(i);
-            matcher.find();
-            names.add(matcher.group(1));
-            types.add(matcher.group(2));
+        Column[] columnArray = new Column[columnExpressions.length];
+        for (int i = 0;i<columnExpressions.length;i++) {
+            String[] colData = columnExpressions[i].split(" ");
+            columnArray[i] = new Column(colData[0],Data.valueOf(colData[1].toUpperCase()));
         }
-        ArrayList<Column> toColumns = new ArrayList<>();
-        for (int i = 0; i < names.size(); i++) {
-            toColumns.add(
-                    new Column(names.get(i), Data.valueOf(types.get(i).toUpperCase()))
-            );
-        }
-        Column[] columnsArray = new Column[toColumns.size()];
-        columnsArray = toColumns.toArray(columnsArray);
 
-        Table table = new Table(columnsArray);
-
-        //Get the information
-        Pattern readValues = Pattern.compile("(\\w+.*\\w+\\b)");
+        Table table = new Table(columnArray);
         while (input.hasNextLine()) {
             //get the next line
             line = input.nextLine();
             //split the next line
             String[] values = line.split(",");
-            //new arraylist for storage
-            ArrayList<String> the_values = new ArrayList<>();
-            for (String i : values) {
-                //set the matcher and prime it with find
-                matcher = readValues.matcher(i);
-                matcher.find();
-                //add to the values
-                the_values.add(matcher.group(0));
-            }
-            String[] toRow = new String[the_values.size()];
-            toRow = the_values.toArray(toRow);
-            table.addRow(toRow);
+            table.addRow(values);
         }
         input.close();
         this.addTable(name,table);
@@ -197,8 +170,6 @@ public class Database{
         else{
             tables.get(m.group(1)).addRow(m.group(2).split(","));
         }
-
-        System.out.printf("You are trying to insert the row \"%s\" into the table %s\n", m.group(2), m.group(1));
     }
 
     private String printTable(String name) {
