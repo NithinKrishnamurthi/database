@@ -70,7 +70,7 @@ public class Database{
                 return loadTable(m.group(1));
             }
             catch(Exception e){
-                return "ERROR: TBL file not found: " + m.group(1);
+                return "ERROR: TBL file not found: " + m.group(1) +".tbl";
             }
         } else if ((m = STORE_CMD.matcher(query)).matches()) {
             storeTable(m.group(1));
@@ -127,10 +127,8 @@ public class Database{
         //POSSIBLE ERRORS:
         //Scanner was implemented incorrectly
         //ARRAYLIST IN FOR LOOP COULD POSSIBLY ADD MORE VALUES EACH CREATION??
-
-        System.out.printf("You are trying to load the table named %s\n", name);
         //Initialize new Scanner and Regex Objects
-        File file = new File(name);
+        File file = new File(name + ".tbl");
         Scanner input = new Scanner(file);
         ArrayList<String> names = new ArrayList<>();
         ArrayList<String> types = new ArrayList<>();
