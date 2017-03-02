@@ -30,12 +30,12 @@ public class Table {
         String[] items5 = {"8","9"};
         String[] items6 = {"10","1"};
 
-//        t.addRow(items1);
-//        t.addRow(items2);
-//        t.addRow(items3);
-//        t2.addRow(items4);
-//        t2.addRow(items5);
-//        t2.addRow(items6);
+        t.addRow(items1);
+        t.addRow(items2);
+        t.addRow(items3);
+        t2.addRow(items4);
+        t2.addRow(items5);
+        t2.addRow(items6);
         Table[] tableArray = {t,t2};
         System.out.println(t);
         System.out.println(t2);

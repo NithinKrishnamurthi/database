@@ -11,7 +11,7 @@ public class Item {
         this.value = value;
     }
     public boolean isEqual(Item item){
-        return (this.column.equals(item.column) && this.value == item.value);
+        return (this.column.equals(item.column) && this.value.equals(item.value));
     }
     public String toString(){
         return value;

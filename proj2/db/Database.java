@@ -188,7 +188,8 @@ public class Database{
     }
 
     private String select(String exprs, String tables, String conds) {
-        String[] tableNames = tables.split(",\\s*");
+        tables = tables.trim();
+        String[] tableNames = tables.split("\\s*,\\s*");
         Table[] tablesArray = new Table[tableNames.length];
         for(int i = 0;i<tablesArray.length;i++){
             tablesArray[i] = this.tables.get(tableNames[i]);
