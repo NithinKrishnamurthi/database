@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="javalib">
+    <archive path="/Users/nithin/Documents/cs61b/cfj/javalib/jh61b.jar" />
+    <archive path="/Users/nithin/Documents/cs61b/cfj/javalib/hamcrest-core-1.3.jar" />
+    <archive path="/Users/nithin/Documents/cs61b/cfj/javalib/stdlib-package.jar" />
+    <archive path="/Users/nithin/Documents/cs61b/cfj/javalib/junit-4.12.jar" />
+    <archive path="/Users/nithin/Documents/cs61b/cfj/javalib/stdlib.jar" />
+    <archive path="/Users/nithin/Documents/cs61b/cfj/javalib/algs4.jar" />
+  </library>
+</eclipse-userlibraries>
+
