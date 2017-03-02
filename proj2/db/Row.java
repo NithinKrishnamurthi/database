@@ -108,7 +108,12 @@ public class Row {
             if(!firstElem){
                 returnVal += ", ";
             }
-            returnVal += item.value;
+            if(item.column.type == Data.STRING) {
+                returnVal += "'" + item.value + "'";
+            }
+            else {
+                returnVal += item.value;
+            }
             firstElem = false;
         }
         return returnVal;
