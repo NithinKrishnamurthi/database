@@ -6,25 +6,28 @@ package db;
 public class Column {
     String name;
     Data type;
-    public Column(String name, Data type){
+
+    public Column(String name, Data type) {
         this.name = name;
         this.type = type;
     }
 
     @Override
-    public boolean equals(Object o){
-        if(o == this){
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
         }
-        if(!(o instanceof Column)){
+        if (!(o instanceof Column)) {
             return false;
         }
-        if(this.name.equals(((Column) o).name)){
+        if (this.name.equals(((Column) o).name)) {
             return true;
         }
         return false;
     }
-    public String toString(){
+
+    public String toString() {
+
         return this.name;
     }
 

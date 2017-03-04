@@ -230,7 +230,7 @@ public class Database{
         for(int i = 0;i<expressions.length;i++){
             columnArray[i] = t.evalColExp(expressions[i]);
         }
-        t = Table.Join(columnArray);
+        t = Table.addColTables(columnArray);
         return t.toString();
         //System.out.printf("You are trying to select these expressions:" +
         //        " '%s' from the join of these tables: '%s', filtered by these conditions: '%s'\n", exprs, tables, conds);
