@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Database{
+public class Database {
     HashMap<String, Table> tables;
 
     public Database() {
@@ -25,9 +25,10 @@ public class Database{
 
         return eval(query);
     }
-    public Table getTable(String s){
+
+    public Table getTable(String s) {
         Table t = this.tables.get(s);
-        if(t==null){
+        if (t == null) {
             throw new TableNotFoundException("Table " + s + " not found.");
 
         }
@@ -93,23 +94,17 @@ public class Database{
             } else {
                 System.err.printf("Malformed query: %s\n", query);
             }
-        }
-        catch (IllegalOperationException e){
+        } catch (IllegalOperationException e) {
             return "ERROR: ILLEGAL OPERATION " + e.getMessage();
-        }
-        catch (TypeException e){
+        } catch (TypeException e) {
             return "ERROR: TYPE " + e.getMessage();
-        }
-        catch (ColumnNotFoundException e){
+        } catch (ColumnNotFoundException e) {
             return "ERROR: COLUMN NOT FOUND " + e.getMessage();
-        }
-        catch (RowAdditionException e){
+        } catch (RowAdditionException e) {
             return "ERROR: ROW ADDITION " + e.getMessage();
-        }
-        catch (MalformedCommandException e){
+        } catch (MalformedCommandException e) {
             return "ERROR: MALFORMED COMMAND " + e.getMessage();
-        }
-        catch (TableNotFoundException e){
+        } catch (TableNotFoundException e) {
             return "ERROR: TABLE NOT FOUND " + e.getMessage();
         }
         return "";
@@ -131,16 +126,15 @@ public class Database{
         Column[] columns = new Column[cols.length];
         for (int i = 0; i < cols.length; i++) {
             String colName = cols[i].split(" ")[0];
-            if (isLowerCase(cols[i].split(" ")[1])){
+            if (isLowerCase(cols[i].split(" ")[1])) {
                 Data colData = Data.valueOf(cols[i].split(" ")[1].toUpperCase());
-                columns[i] = new Column(colName,colData);
-            }
-            else{
+                columns[i] = new Column(colName, colData);
+            } else {
                 throw new TypeException("Invalid type");
             }
         }
         Table t = new Table(columns);
-        this.addTable(name,t);
+        this.addTable(name, t);
         return "";
     }
 
@@ -163,9 +157,9 @@ public class Database{
         line = line.trim();
         String[] columnExpressions = line.split("\\s*,\\s*");
         Column[] columnArray = new Column[columnExpressions.length];
-        for (int i = 0;i<columnExpressions.length;i++) {
+        for (int i = 0; i < columnExpressions.length; i++) {
             String[] colData = columnExpressions[i].split(" ");
-            columnArray[i] = new Column(colData[0],Data.valueOf(colData[1].toUpperCase()));
+            columnArray[i] = new Column(colData[0], Data.valueOf(colData[1].toUpperCase()));
         }
 
         Table table = new Table(columnArray);
@@ -177,10 +171,9 @@ public class Database{
             table.addRow(values);
         }
         input.close();
-        this.addTable(name,table);
+        this.addTable(name, table);
         return "";
     }
-
 
 
     private void storeTable(String name) {
@@ -196,8 +189,7 @@ public class Database{
         if (!m.matches()) {
             System.err.printf("Malformed insert: %s\n", expr);
             return "";
-        }
-        else{
+        } else {
             tables.get(m.group(1)).addRow(m.group(2).split("\\s*,\\s*"));
             return "";
         }
@@ -220,14 +212,19 @@ public class Database{
     private String select(String exprs, String tables, String conds) {
         String[] tableNames = tables.split("\\s*,\\s*");
         Table[] tablesArray = new Table[tableNames.length];
-        for(int i = 0;i < tablesArray.length;i++){
+        for (int i = 0; i < tablesArray.length; i++) {
             tablesArray[i] = this.getTable(tableNames[i]);
         }
         Table t = Table.Join(tablesArray);
         exprs = exprs.trim();
         String[] expressions = exprs.split("\\s*,\\s*");
         Table[] columnArray = new Table[expressions.length];
-        for(int i = 0;i<expressions.length;i++){
+        if (expressions.length == 1) {
+            if (expressions[0].trim().equals("*")) {
+                return t.toString();
+            }
+        }
+        for (int i = 0; i < expressions.length; i++) {
             columnArray[i] = t.evalColExp(expressions[i]);
         }
         t = Table.addColTables(columnArray);

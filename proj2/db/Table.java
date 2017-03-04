@@ -62,7 +62,7 @@ public class Table {
         s = s.trim();
         String[] operands = s.split("\\s+as\\s+");
         if (operands.length == 1) {
-            return getColTable(s);
+            return getColTable(operands[0].trim());
         } else {
             String colName = operands[1].trim();
             Matcher matcher;
@@ -83,9 +83,6 @@ public class Table {
 
     // Simple Select functionality
     public Table getColTable(String colName) {
-        if (colName.equals("*")) {
-            return this;
-        }
         Table colTable = new Table(getCol(colName));
         for (Row row : rows) {
             for (Item i : row.items) {
