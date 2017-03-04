@@ -26,6 +26,11 @@ public class Column {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return type.hashCode() + name.hashCode();
+    }
+
     public String toString() {
 
         return this.name;

@@ -1,6 +1,7 @@
 package db;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,8 +19,8 @@ public class Table {
     }
 
     public Table(Column column) {
-        Column columns[] = {column};
-        this.columns = columns;
+        Column[] columnsArray = { column };
+        this.columns = columnsArray;
         this.rows = new ArrayList<>();
     }
 
@@ -111,7 +112,8 @@ public class Table {
         try {
             for (int i = 0; i < row.length; i++) {
                 if (!columns[i].type.equals(Data.type(row[i]))) {
-                    throw new RowAdditionException("Cannot add object of type " + Data.type(row[i]) + " to column of type " + columns[i].type);
+                    throw new RowAdditionException("Cannot add object of type "
+                            + Data.type(row[i]) + " to column of type " + columns[i].type);
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -140,19 +142,25 @@ public class Table {
 
     }
 
-    public static Table operate(String colName, String prompt, Table table1, Table table2) {
-        Table t = new Table(new Column(colName, Data.operate(table1.columns[0].type, table2.columns[0].type)));
+    public static Table operate(String colName,
+                                String prompt, Table table1, Table table2) {
+        Table t = new Table(
+                new Column(colName, Data.operate(table1.columns[0].type, table2.columns[0].type)));
         for (int i = 0; i < table1.rows.size(); i++) {
-            t.addRow(Item.operate(colName, prompt, table1.rows.get(i).items[0], table2.rows.get(i).items[0]).value);
+            t.addRow(Item.operate(colName, prompt,
+                    table1.rows.get(i).items[0], table2.rows.get(i).items[0]).value);
         }
         return t;
     }
 
-    public static Table operate(String colName, String prompt, Table table1, String value, Data type) {
-        Table t = new Table(new Column(colName, Data.operate(table1.columns[0].type, type)));
+    public static Table operate(
+            String colName, String prompt, Table table1, String value, Data type) {
+        Table t = new Table(new Column(colName,
+                Data.operate(table1.columns[0].type, type)));
         for (int i = 0; i < table1.rows.size(); i++) {
             Item item = table1.rows.get(i).items[0];
-            t.addRow(Item.operate(colName, prompt, item, new Item(t.columns[0], value)).value);
+            t.addRow(Item.operate(colName, prompt,
+                    item, new Item(t.columns[0], value)).value);
         }
         return t;
     }
@@ -181,7 +189,8 @@ public class Table {
         return returnVal;
     }
 
-    //Forgive me Hug for the ugliness below. I didn't know how to do this without repeating myself. I failed you.
+    //Forgive me Hug for the ugliness below.
+    // I didn't know how to do this without repeating myself. I failed you.
 
     public Column[] columnJoin(Table table) {
         Column[] matchingCols = matchingCols(table);
@@ -235,7 +244,7 @@ public class Table {
         return matchColsArray;
     }
 
-    public static Table Join(Table... tables) {
+    public static Table join(Table... tables) {
         if (tables.length == 1) {
             return tables[0];
         } else {

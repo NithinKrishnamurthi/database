@@ -14,25 +14,32 @@ public enum Data {
                         return FLOAT;
                     case FLOAT:
                         return FLOAT;
+                    default:
+                        throw new IllegalOperationException("Cannot combine class "
+                                + a.toString() + " and " + b.toString() + " in operation.");
                 }
-                throw new IllegalOperationException("Cannot combine class " + a.toString() + " and " + b.toString() + " in operation.");
             case INT:
                 switch (b) {
                     case INT:
                         return INT;
                     case FLOAT:
                         return FLOAT;
+                    default:
+                        throw new IllegalOperationException("Cannot combine class "
+                                + a.toString() + " and " + b.toString() + " in operation.");
                 }
-                throw new IllegalOperationException("Cannot combine class " + a.toString() + " and " + b.toString() + " in operation.");
             case STRING:
                 switch (b) {
                     case STRING:
                         return STRING;
+                    default:
+                        throw new IllegalOperationException("Cannot combine class "
+                                + a.toString() + " and " + b.toString() + " in operation.");
                 }
-                throw new IllegalOperationException("Cannot combine class " + a.toString() + " and " + b.toString() + " in operation.");
+            default:
+                throw new IllegalOperationException("Unrecognized class");
 
         }
-        throw new IllegalOperationException("Cannot combine class " + a.toString() + " and " + b.toString() + " in operation.");
     }
 
     public static Data type(String s) {

@@ -1,9 +1,13 @@
 package db;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.Writer;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -50,16 +54,16 @@ public class Database {
             SELECT_CMD = Pattern.compile("select " + REST);
 
     // Stage 2 syntax, contains the clauses of commands.
-    private final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*" +
-            "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
-            SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+" +
-                    "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+" +
-                    "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+" +
-                    "[\\w\\s+\\-*/'<>=!]+?)*))?"),
-            CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+" +
-                    SELECT_CLS.pattern()),
-            INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?" +
-                    "\\s*(?:,\\s*.+?\\s*)*)");
+    private final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*"
+            + "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
+            SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+"
+                    + "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+"
+                    + "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+"
+                    + "[\\w\\s+\\-*/'<>=!]+?)*))?"),
+            CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+"
+                    + SELECT_CLS.pattern()),
+            INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?"
+                    + "\\s*(?:,\\s*.+?\\s*)*)");
 
     public void main(String[] args) {
         if (args.length != 1) {
@@ -74,7 +78,7 @@ public class Database {
         try {
             Matcher m;
             if ((m = CREATE_CMD.matcher(query)).matches()) {
-                createTable(m.group(1));
+                return createTable(m.group(1));
             } else if ((m = LOAD_CMD.matcher(query)).matches()) {
                 try {
                     return loadTable(m.group(1));
@@ -106,6 +110,8 @@ public class Database {
             return "ERROR: MALFORMED COMMAND " + e.getMessage();
         } catch (TableNotFoundException e) {
             return "ERROR: TABLE NOT FOUND " + e.getMessage();
+        } catch (StoreException e) {
+            return "ERROR: STORE EXCEPTION " + e.getMessage();
         }
         return "";
     }
@@ -138,9 +144,9 @@ public class Database {
         return "";
     }
 
-    private String createSelectedTable(String name, String exprs, String tables, String conds) {
-        System.out.printf("You are trying to create a table named %s by selecting these expressions:" +
-                " '%s' from the join of these tables: '%s', filtered by these conditions: '%s'\n", name, exprs, tables, conds);
+    private String createSelectedTable(
+            String name, String exprs, String tablesInput, String conds) {
+        addTable(name, select(exprs, tablesInput, conds));
         return "";
     }
 
@@ -149,35 +155,49 @@ public class Database {
         //Scanner was implemented incorrectly
         //ARRAYLIST IN FOR LOOP COULD POSSIBLY ADD MORE VALUES EACH CREATION??
         //Initialize new Scanner and Regex Objects
+        try {
+            File file = new File(name + ".tbl");
+            Scanner input = new Scanner(file);
+            //Get the Column Titles
+            String line = input.nextLine();
+            line = line.trim();
+            String[] columnExpressions = line.split("\\s*,\\s*");
+            Column[] columnArray = new Column[columnExpressions.length];
+            for (int i = 0; i < columnExpressions.length; i++) {
+                String[] colData = columnExpressions[i].split(" ");
+                columnArray[i] = new Column(colData[0], Data.valueOf(colData[1].toUpperCase()));
+            }
 
-        File file = new File(name + ".tbl");
-        Scanner input = new Scanner(file);
-        //Get the Column Titles
-        String line = input.nextLine();
-        line = line.trim();
-        String[] columnExpressions = line.split("\\s*,\\s*");
-        Column[] columnArray = new Column[columnExpressions.length];
-        for (int i = 0; i < columnExpressions.length; i++) {
-            String[] colData = columnExpressions[i].split(" ");
-            columnArray[i] = new Column(colData[0], Data.valueOf(colData[1].toUpperCase()));
-        }
 
-        Table table = new Table(columnArray);
-        while (input.hasNextLine()) {
-            //get the next line
-            line = input.nextLine();
-            //split the next line
-            String[] values = line.split("\\s*,\\s*");
-            table.addRow(values);
+            Table table = new Table(columnArray);
+            while (input.hasNextLine()) {
+                //get the next line
+                line = input.nextLine();
+                //split the next line
+                String[] values = line.split("\\s*,\\s*");
+                table.addRow(values);
+            }
+            input.close();
+            this.addTable(name, table);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new RowAdditionException("Mismatch between column size and Table dimensions");
         }
-        input.close();
-        this.addTable(name, table);
         return "";
     }
 
 
     private void storeTable(String name) {
-        System.out.printf("You are trying to store the table named %s\n", name);
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(name + ".tbl"), "utf-8"))) {
+            writer.write(getTable(name).toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new StoreException("Unsupported Encoding");
+        } catch (FileNotFoundException e) {
+            throw new StoreException("FileNotFound Exception");
+        } catch (IOException e) {
+            throw new StoreException("IO Exception");
+        }
+
     }
 
     private void dropTable(String name) {
@@ -196,7 +216,7 @@ public class Database {
     }
 
     private String printTable(String name) {
-        Table t = tables.get(name);
+        Table t = getTable(name);
         return t.toString();
     }
 
@@ -205,32 +225,30 @@ public class Database {
         if (!m.matches()) {
             throw new MalformedCommandException("Malformed select: " + expr);
         }
-        return select(m.group(1), m.group(2), m.group(3));
+        return select(m.group(1), m.group(2), m.group(3)).toString();
 
     }
 
-    private String select(String exprs, String tables, String conds) {
-        String[] tableNames = tables.split("\\s*,\\s*");
+    private Table select(String exprs, String tablesInput, String conds) {
+        String[] tableNames = tablesInput.split("\\s*,\\s*");
         Table[] tablesArray = new Table[tableNames.length];
         for (int i = 0; i < tablesArray.length; i++) {
             tablesArray[i] = this.getTable(tableNames[i]);
         }
-        Table t = Table.Join(tablesArray);
+        Table t = Table.join(tablesArray);
         exprs = exprs.trim();
         String[] expressions = exprs.split("\\s*,\\s*");
         Table[] columnArray = new Table[expressions.length];
         if (expressions.length == 1) {
             if (expressions[0].trim().equals("*")) {
-                return t.toString();
+                return t;
             }
         }
         for (int i = 0; i < expressions.length; i++) {
             columnArray[i] = t.evalColExp(expressions[i]);
         }
         t = Table.addColTables(columnArray);
-        return t.toString();
-        //System.out.printf("You are trying to select these expressions:" +
-        //        " '%s' from the join of these tables: '%s', filtered by these conditions: '%s'\n", exprs, tables, conds);
+        return t;
     }
 
     private boolean isLowerCase(String s) {

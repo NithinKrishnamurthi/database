@@ -27,32 +27,44 @@ public class Item {
             case "+":
                 switch (type) {
                     case INT:
-                        return new Item(new Column(name, type), String.valueOf(Integer.parseInt(i1.value) + Integer.parseInt(i2.value)));
+                        return new Item(new Column(name, type),
+                                String.valueOf(Integer.parseInt(i1.value)
+                                        + Integer.parseInt(i2.value)));
                     case FLOAT:
-                        return new Item(new Column(name, type), String.valueOf(Float.parseFloat(i1.value) + Float.parseFloat(i2.value)));
+                        return new Item(new Column(name, type),
+                                String.valueOf(Float.parseFloat(i1.value)
+                                        + Float.parseFloat(i2.value)));
                     case STRING:
-                        return new Item(new Column(name, type), i1.value.substring(0, i1.value.length() - 1) + i2.value.substring(1));
+                        return new Item(new Column(name, type),
+                                i1.value.substring(0, i1.value.length() - 1)
+                                        + i2.value.substring(1));
                 }
             case "-":
                 switch (type) {
                     case INT:
-                        return new Item(new Column(name, type), String.valueOf(Integer.parseInt(i1.value) - Integer.parseInt(i2.value)));
+                        return new Item(new Column(name, type),
+                                String.valueOf(Integer.parseInt(i1.value) - Integer.parseInt(i2.value)));
                     case FLOAT:
-                        return new Item(new Column(name, type), String.valueOf(Float.parseFloat(i1.value) - Float.parseFloat(i2.value)));
+                        return new Item(new Column(name, type),
+                                String.valueOf(Float.parseFloat(i1.value) - Float.parseFloat(i2.value)));
                 }
             case "/":
                 switch (type) {
                     case INT:
-                        return new Item(new Column(name, type), String.valueOf(Integer.parseInt(i1.value) / Integer.parseInt(i2.value)));
+                        return new Item(new Column(name, type),
+                                String.valueOf(Integer.parseInt(i1.value) / Integer.parseInt(i2.value)));
                     case FLOAT:
-                        return new Item(new Column(name, type), String.valueOf(Float.parseFloat(i1.value) / Float.parseFloat(i2.value)));
+                        return new Item(new Column(name, type),
+                                String.valueOf(Float.parseFloat(i1.value) / Float.parseFloat(i2.value)));
                 }
             case "*":
                 switch (type) {
                     case INT:
-                        return new Item(new Column(name, type), String.valueOf(Integer.parseInt(i1.value) * Integer.parseInt(i2.value)));
+                        return new Item(new Column(name, type),
+                                String.valueOf(Integer.parseInt(i1.value) * Integer.parseInt(i2.value)));
                     case FLOAT:
-                        return new Item(new Column(name, type), String.valueOf(Float.parseFloat(i1.value) * Float.parseFloat(i2.value)));
+                        return new Item(new Column(name, type),
+                                String.valueOf(Float.parseFloat(i1.value) * Float.parseFloat(i2.value)));
                 }
         }
         throw new IllegalOperationException("Cannot perform operation between " + i1.column.type + " and " + i2.column.type);
