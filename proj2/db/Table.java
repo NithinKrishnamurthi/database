@@ -5,71 +5,91 @@ import java.util.*;
 /**
  * Created by nithin on 2/17/17.
  */
-public class Table {
+public class Table{
 
     Column[] columns;
     ArrayList<Row> rows;
+
     public Table(Column[] columns){
         this.columns = columns;
         this.rows = new ArrayList<>();
     }
-    public static void main(String[] args){
-        Column[] columns = {new Column("x",Data.STRING),new Column("y",Data.STRING)};
-        Column[] columns2 = {new Column("x",Data.STRING),new Column("z",Data.STRING)};
-        Table t = new Table(columns);
-        Table t2 = new Table(columns2);
-        Item x1 = new Item(new Column("x",Data.FLOAT),"2");
-        Item x2 = new Item(new Column("y",Data.STRING),"2.0");
-        Item x3 = new Item(new Column("z",Data.STRING),"2.5");
-        Item x4 = new Item(new Column("x",Data.INT),"2");
-        Item x5 = new Item(new Column("x",Data.INT),"2");
-        String[] items1 = {"2","5"};
-        String[] items2 = {"8","3"};
-        String[] items3 = {"13","7"};
-        String[] items4 = {"2","4"};
-        String[] items5 = {"8","9"};
-        String[] items6 = {"10","1"};
-
-        t.addRow(items1);
-        t.addRow(items2);
-        t.addRow(items3);
-        t2.addRow(items4);
-        t2.addRow(items5);
-        t2.addRow(items6);
-        Table[] tableArray = {t,t2};
-        System.out.println(t);
-        System.out.println(t2);
-
-        System.out.println(Join(tableArray));
-
+    public Table(Column column){
+        Column columns[] = {column};
+        this.columns = columns;
+        this.rows = new ArrayList<>();
+    }
+    public void addRow(String s){
+        String[] value = {s};
+        if(validateRow(value)){
+            this.addRow(value);
+        }
+    }
+    public Column getCol(String s){
+        for(Column c: columns){
+            if(c.name.equals(s)){
+                return c;
+            }
+        }
+        throw new ColumnNotFoundException("Column " + s + " not found");
     }
 
-    // Simple Select functionality
-    public Table subTable(String[] colNames){
-        Column[] subTableCols = new Column[colNames.length];
-        for(int i = 0; i<colNames.length;i++){
-            for(Column column: columns){
-                if(column.name.equals(colNames[i])){
-                    subTableCols[i] = column;
-                }
-            }
+    public static void main(String[] args) {
+        Column[] columns = {new Column("x", Data.STRING),new Column("y",Data.STRING)};
+        Column[] columns2 = {new Column("y", Data.INT), new Column("z",Data.STRING)};
+        Table t = new Table(columns);
+        Table t2 = new Table(columns2);
+        String[] items1 = {"2","3"};
+        String[] items2 = {"8","5"};
+        String[] items3 = {"13","7"};
+        String[] items4 = {"5","8"};
+        t.addRow(items1);
+        t.addRow(items2);
+        t2.addRow(items3);
+        t2.addRow(items4);
+        System.out.print(Arrays.toString("x + '2'".split("\\s+")));
+        System.out.print(t.evalColExp("x + '2' as z"));
 
+
+    }
+    public Table evalColExp(String s){
+        s = s.trim();
+        String[] operands = s.split("\\s+as\\s+");
+        if(operands.length == 1){
+            return getColTable(s);
         }
-        Table subTable = new Table(subTableCols);
+        else{
+            String expression = operands[0];
+            String colName = operands[1];
+            String[] expressionArray = expression.split("\\s+");
+            Table t1 = getColTable(expressionArray[0]);
+            String operator = expressionArray[1];
+            Data type = Data.type(expressionArray[2]);
+            if(type == null){
+                Table t2 = getColTable(expressionArray[1]);
+                return Table.operate(colName,operator,t1,t2);
+            }
+            else{
+                return Table.operate(colName,operator,t1,expressionArray[2],type);
+            }
+        }
+    }
+    // Simple Select functionality
+    public Table getColTable(String colName){
+        if(colName.equals("*")){
+            return this;
+        }
+        Table colTable = new Table(getCol(colName));
         for(Row row: rows){
-            ArrayList<Item> rowItems = new ArrayList<>();
-            for(Column c: subTable.columns) {
-                for (Item i : row.items) {
-                    if (c.equals(i.column)){
-                        rowItems.add(i);
+            for (Item i : row.items) {
+                    if (colName.equals(i.column.name)){
+                        colTable.addRow(i.value);
                     }
                 }
-                Item[] rowItemsArray = new Item[rowItems.size()];
-                rowItemsArray = rowItems.toArray(rowItemsArray);
-                subTable.addRow(new Row(rowItemsArray));
+
             }
-        }
-        return subTable;
+
+        return colTable;
     }
     // Select functionality done.
 
@@ -84,13 +104,23 @@ public class Table {
     }
 
     public boolean validateRow(String[] row){
+        try {
+            for (int i = 0; i < row.length; i++) {
+                if (!columns[i].type.equals(Data.type(row[i]))){
+                    throw new RowAdditionException("Cannot add object of type " + Data.type(row[i]) + " to column of type " + columns[i].type);
+                }
+            }
+        }
+        catch (ArrayIndexOutOfBoundsException e){
+            throw new RowAdditionException("Size of Row and Table do not match");
+        }
         return true;
 
     }
     public void addRow(Row row){
         for(int i = 0;i<columns.length;i++){
             if(!columns[i].equals(row.items[i].column)){
-                throw new RuntimeException("Row Table size mismatch");
+                throw new RuntimeException("Row Table mismatch");
             }
         }
         rows.add(row);
@@ -106,19 +136,23 @@ public class Table {
 
     }
 
-    public static Table helperJoin(Table table1, Table table2) {
-        Table returnVal = new Table(table1.columnJoin(table2));
-        for(Row i: table1.rows){
-            for(Row j: table2.rows){
-                Row join = i.rowJoin(j);
-                if(join != null){
-                    returnVal.addRow(join);
-                }
-            }
+    public static Table operate(String colName,String prompt,Table table1, Table table2){
+        Table t = new Table(new Column(colName,Data.operate(table1.columns[0].type,table2.columns[0].type)));
+        for(int i = 0;i < table1.rows.size();i++){
+            t.addRow(Item.operate(colName,prompt,table1.rows.get(i).items[0],table2.rows.get(i).items[0]).value);
         }
-        return returnVal;
-
+        return t;
     }
+    public static Table operate(String colName, String prompt, Table table1, String value, Data type){
+        Table t = new Table(new Column(colName,Data.operate(table1.columns[0].type,type)));
+        for(int i = 0; i < table1.rows.size();i++){
+            Item item = table1.rows.get(i).items[0];
+            t.addRow(Item.operate(colName,prompt,item,new Item(t.columns[0],value)).value);
+        }
+        return t;
+    }
+
+
     public static String columnsToString(Column[] columns){
         String returnVal = "";
         boolean firstElem = true;
@@ -205,6 +239,19 @@ public class Table {
             }
             return finalVal;
         }
+
+    }
+    public static Table helperJoin(Table table1, Table table2) {
+        Table returnVal = new Table(table1.columnJoin(table2));
+        for(Row i: table1.rows){
+            for(Row j: table2.rows){
+                Row join = i.rowJoin(j);
+                if(join != null){
+                    returnVal.addRow(join);
+                }
+            }
+        }
+        return returnVal;
 
     }
 

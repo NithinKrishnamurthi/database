@@ -25,6 +25,14 @@ public class Database{
 
         return eval(query);
     }
+    public Table getTable(String s){
+        Table t = this.tables.get(s);
+        if(t==null){
+            throw new TableNotFoundException("Table " + s + " not found.");
+
+        }
+        return t;
+    }
 
     // Various common constructs, simplifies parsing.
     private final String REST = "\\s*(.*)\\s*",
@@ -62,28 +70,47 @@ public class Database{
     }
 
     public String eval(String query) {
-        Matcher m;
-        if ((m = CREATE_CMD.matcher(query)).matches()) {
-            createTable(m.group(1));
-        } else if ((m = LOAD_CMD.matcher(query)).matches()) {
-            try {
-                return loadTable(m.group(1));
+        try {
+            Matcher m;
+            if ((m = CREATE_CMD.matcher(query)).matches()) {
+                createTable(m.group(1));
+            } else if ((m = LOAD_CMD.matcher(query)).matches()) {
+                try {
+                    return loadTable(m.group(1));
+                } catch (FileNotFoundException e) {
+                    return "ERROR: TBL file not found: " + m.group(1) + ".tbl";
+                }
+            } else if ((m = STORE_CMD.matcher(query)).matches()) {
+                storeTable(m.group(1));
+            } else if ((m = DROP_CMD.matcher(query)).matches()) {
+                dropTable(m.group(1));
+            } else if ((m = INSERT_CMD.matcher(query)).matches()) {
+                insertRow(m.group(1));
+            } else if ((m = PRINT_CMD.matcher(query)).matches()) {
+                return printTable(m.group(1));
+            } else if ((m = SELECT_CMD.matcher(query)).matches()) {
+                return select(m.group(1));
+            } else {
+                System.err.printf("Malformed query: %s\n", query);
             }
-            catch(FileNotFoundException e){
-                return "ERROR: TBL file not found: " + m.group(1) + ".tbl";
-            }
-        } else if ((m = STORE_CMD.matcher(query)).matches()) {
-            storeTable(m.group(1));
-        } else if ((m = DROP_CMD.matcher(query)).matches()) {
-            dropTable(m.group(1));
-        } else if ((m = INSERT_CMD.matcher(query)).matches()) {
-            insertRow(m.group(1));
-        } else if ((m = PRINT_CMD.matcher(query)).matches()) {
-            return printTable(m.group(1));
-        } else if ((m = SELECT_CMD.matcher(query)).matches()) {
-            return select(m.group(1));
-        } else {
-            System.err.printf("Malformed query: %s\n", query);
+        }
+        catch (IllegalOperationException e){
+            return "ERROR: ILLEGAL OPERATION " + e.getMessage();
+        }
+        catch (TypeException e){
+            return "ERROR: TYPE " + e.getMessage();
+        }
+        catch (ColumnNotFoundException e){
+            return "ERROR: COLUMN NOT FOUND " + e.getMessage();
+        }
+        catch (RowAdditionException e){
+            return "ERROR: ROW ADDITION " + e.getMessage();
+        }
+        catch (MalformedCommandException e){
+            return "ERROR: MALFORMED COMMAND " + e.getMessage();
+        }
+        catch (TableNotFoundException e){
+            return "ERROR: TABLE NOT FOUND " + e.getMessage();
         }
         return "";
     }
@@ -109,7 +136,7 @@ public class Database{
                 columns[i] = new Column(colName,colData);
             }
             else{
-                throw new RuntimeException("Invalid type");
+                throw new TypeException("Invalid type");
             }
         }
         Table t = new Table(columns);
@@ -154,6 +181,8 @@ public class Database{
         return "";
     }
 
+
+
     private void storeTable(String name) {
         System.out.printf("You are trying to store the table named %s\n", name);
     }
@@ -162,14 +191,15 @@ public class Database{
         tables.remove(name);
     }
 
-    private void insertRow(String expr) {
+    private String insertRow(String expr) {
         Matcher m = INSERT_CLS.matcher(expr);
         if (!m.matches()) {
             System.err.printf("Malformed insert: %s\n", expr);
-            return;
+            return "";
         }
         else{
-            tables.get(m.group(1)).addRow(m.group(2).split(","));
+            tables.get(m.group(1)).addRow(m.group(2).split("\\s*,\\s*"));
+            return "";
         }
     }
 
@@ -181,22 +211,27 @@ public class Database{
     private String select(String expr) {
         Matcher m = SELECT_CLS.matcher(expr);
         if (!m.matches()) {
-            System.err.printf("Malformed select: %s\n", expr);
+            throw new MalformedCommandException("Malformed select: " + expr);
         }
-
         return select(m.group(1), m.group(2), m.group(3));
+
     }
 
     private String select(String exprs, String tables, String conds) {
-        tables = tables.trim();
         String[] tableNames = tables.split("\\s*,\\s*");
         Table[] tablesArray = new Table[tableNames.length];
-        for(int i = 0;i<tablesArray.length;i++){
-            tablesArray[i] = this.tables.get(tableNames[i]);
+        for(int i = 0;i < tablesArray.length;i++){
+            tablesArray[i] = this.getTable(tableNames[i]);
         }
         Table t = Table.Join(tablesArray);
+        exprs = exprs.trim();
+        String[] expressions = exprs.split("\\s*,\\s*");
+        Table[] columnArray = new Table[expressions.length];
+        for(int i = 0;i<expressions.length;i++){
+            columnArray[i] = t.evalColExp(expressions[i]);
+        }
+        t = Table.Join(columnArray);
         return t.toString();
-
         //System.out.printf("You are trying to select these expressions:" +
         //        " '%s' from the join of these tables: '%s', filtered by these conditions: '%s'\n", exprs, tables, conds);
     }
@@ -208,6 +243,5 @@ public class Database{
             }
         }
         return true;
-
     }
 }
