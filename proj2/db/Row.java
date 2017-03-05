@@ -26,7 +26,7 @@ public class Row {
                     return item;
                 }
             }
-            throw new RuntimeException("Row does not have specified column");
+            throw new ColumnNotFoundException("Row does not have specified column");
         } catch (Exception e) {
             System.out.println(e);
         }

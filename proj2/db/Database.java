@@ -239,15 +239,18 @@ public class Database {
         exprs = exprs.trim();
         String[] expressions = exprs.split("\\s*,\\s*");
         Table[] columnArray = new Table[expressions.length];
-        if (expressions.length == 1) {
-            if (expressions[0].trim().equals("*")) {
-                return t;
+        if (!expressions[0].trim().equals("*")) {
+            for (int i = 0; i < expressions.length; i++) {
+                columnArray[i] = t.evalColExp(expressions[i]);
+            }
+            t = Table.addColTables(columnArray);
+        }
+        if(conds != null) {
+            String[] conditionals = conds.split(AND);
+            for (String cond : conditionals) {
+                t.evalConditionalExp(cond);
             }
         }
-        for (int i = 0; i < expressions.length; i++) {
-            columnArray[i] = t.evalColExp(expressions[i]);
-        }
-        t = Table.addColTables(columnArray);
         return t;
     }
 

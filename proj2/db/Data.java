@@ -4,7 +4,10 @@ package db;
  * Created by thomashli on 2/26/17.
  */
 public enum Data {
-    FLOAT, STRING, INT;
+    FLOAT, STRING, INT, NOVALUE,NaN,COLNAME;
+    public static void main(String[] args){
+        System.out.print(Data.type("'Golden Bears'"));
+    }
 
     public static Data operate(Data a, Data b) {
         switch (a) {
@@ -49,8 +52,12 @@ public enum Data {
             return Data.FLOAT;
         } else if (s.matches("^'.*'$")) {
             return Data.STRING;
+        } else if (s.matches("NOVALUE")){
+            return Data.NOVALUE;
+        } else if (s.matches("NaN")){
+            return Data.NaN;
         }
-        return null;
+        return Data.COLNAME;
     }
 
 }
