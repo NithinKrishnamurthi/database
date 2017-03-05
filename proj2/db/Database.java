@@ -244,6 +244,8 @@ public class Database {
                 columnArray[i] = t.evalColExp(expressions[i]);
             }
             t = Table.addColTables(columnArray);
+        } else {
+            t = t.clone();
         }
         if(conds != null) {
             String[] conditionals = conds.split(AND);

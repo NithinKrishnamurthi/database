@@ -84,10 +84,6 @@ public class Table {
     }
 
     public Table evalConditionalExp(String s){
-        Table t = new Table(this.columns);
-        for(Row r: this.rows){
-            t.addRow(r);
-        }
         s = s.trim();
         Matcher matcher;
         Pattern pattern = Pattern.compile(expressionPattern);
@@ -117,7 +113,7 @@ public class Table {
                 throw new IllegalOperationException("Cannot peform " + matcher.group(2));
         }
         Data type = Data.type(matcher.group(3).trim());
-        for(int i = 0;i<rows.size();i++){
+        for(int i = 0;i< rows.size();i++){
             Row r = rows.get(i);
             Operand op1 = new Operand(r.getItem(matcher.group(1).trim()));
             Operand op2;
@@ -133,7 +129,7 @@ public class Table {
             }
 
         }
-        return t;
+        return this;
 
     }
 
@@ -366,6 +362,13 @@ public class Table {
         }
         return returnVal;
 
+    }
+    public Table clone(){
+        Table t = new Table(this.columns);
+        for(Row r: this.rows){
+            t.addRow(r);
+        }
+        return t;
     }
 
     public static Table addColTables(Table... tables) {
